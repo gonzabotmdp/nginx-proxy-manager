@@ -38,6 +38,11 @@ RUN echo "fs.file-max = 65535" > /etc/sysctl.conf \
 
 # Keep the bundled npm and the certbot virtualenv on patched versions
 RUN npm install -g npm@latest \
+	&& (cd /tmp && npm pack undici@6.29.1 --silent \
+		&& rm -rf /usr/lib/node_modules/npm/node_modules/undici \
+		&& mkdir /usr/lib/node_modules/npm/node_modules/undici \
+		&& tar xzf undici-6.29.1.tgz --strip-components=1 -C /usr/lib/node_modules/npm/node_modules/undici \
+		&& rm -f undici-6.29.1.tgz) \
 	&& /opt/certbot/bin/pip install --no-cache-dir --upgrade pip setuptools certifi cryptography urllib3 msgpack filelock
 
 # s6 overlay
